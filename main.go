@@ -29,18 +29,17 @@ func handleSing(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("err:  ", err)
+		log.Println("[app] err: ", err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "audio/mpeg")
 
-	log.Println("phrase:  ", body)
+	log.Println("[app] phrase: ", body)
 
 	if _, err := w.Write(resp); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("err:  ", err)
+		log.Println("[app] err: ", err)
 		return
 	}
 }
