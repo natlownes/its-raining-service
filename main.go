@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 )
 
 const LENGTH_LIMIT = 140
@@ -23,39 +25,30 @@ func handleSing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reader, err := audio(body)
-	defer reader.Close()
+	resp, err := audio(body)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, fmt.Sprintf("err %v", err))
+		log.Println("err:  ", err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "audio/mpeg")
-	if _, err := io.Copy(w, reader); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+
+	log.Println("phrase:  ", body)
+
+	if _, err := w.Write(resp); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("err:  ", err)
 		return
 	}
 }
 
-func audio(phrase string) (io.ReadCloser, error) {
+func audio(phrase string) ([]byte, error) {
 	cmd := exec.Command(COMMAND)
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, err
-	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-
-	cmd.Start()
-	if _, err := io.WriteString(stdin, phrase); err != nil {
-		return nil, err
-	}
-	return stdout, stdin.Close()
+	cmd.Stdin = strings.NewReader(phrase)
+	return cmd.Output()
 }
 
 func main() {
