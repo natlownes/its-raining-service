@@ -12,9 +12,9 @@ import (
 const LENGTH_LIMIT = 140
 const COMMAND = "/run.sh"
 
-// http://localhost:8080/sing/?words=horsemeat
+// http://localhost:8080/s?w=horsemeat
 func handleSing(w http.ResponseWriter, r *http.Request) {
-	body := r.FormValue("words")
+	body := r.FormValue("w")
 	if len(body) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -56,7 +56,8 @@ func handlePing(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/sing/", handleSing)
+	http.HandleFunc("/s", handleSing)
+	http.HandleFunc("🎶", handleSing)
 	http.HandleFunc("/varz/ping", handlePing)
 	http.ListenAndServe(":8080", nil)
 }
