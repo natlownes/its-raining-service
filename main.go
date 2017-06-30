@@ -50,7 +50,13 @@ func audio(phrase string) ([]byte, error) {
 	return cmd.Output()
 }
 
+func handlePing(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "pong")
+	w.WriteHeader(http.StatusOK)
+}
+
 func main() {
 	http.HandleFunc("/sing/", handleSing)
+	http.HandleFunc("/varz/ping", handlePing)
 	http.ListenAndServe(":8080", nil)
 }
