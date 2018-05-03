@@ -12,66 +12,38 @@ import (
 const LENGTH_LIMIT = 140
 const COMMAND = "/run.sh"
 
-// http://localhost:8080/s?w=horsemeat
-func handleSing(w http.ResponseWriter, r *http.Request) {
-	body := r.FormValue("w")
-	if len(body) == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if len(body) > LENGTH_LIMIT {
-		w.WriteHeader(http.StatusBadRequest)
-		io.WriteString(w, fmt.Sprintf("characters limited to %v", LENGTH_LIMIT))
-		return
-	}
+type handler func(w http.ResponseWriter, r *http.Request)
 
-	resp, err := audio("raining", body)
+func makeHandler(name string) handler {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body := r.FormValue("w")
+		if len(body) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if len(body) > LENGTH_LIMIT {
+			w.WriteHeader(http.StatusBadRequest)
+			io.WriteString(w, fmt.Sprintf("characters limited to %v", LENGTH_LIMIT))
+			return
+		}
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("[app] err: ", err)
-		return
-	}
+		resp, err := audio(name, body)
 
-	w.Header().Set("content-type", "audio/mpeg")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Println("[app] err: ", err)
+			return
+		}
 
-	log.Println("[app:raining] phrase: ", body)
+		w.Header().Set("content-type", "audio/mpeg")
 
-	if _, err := w.Write(resp); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("[app] err: ", err)
-		return
-	}
-}
+		log.Printf("[app:%s] phrase: %", name, body)
 
-func handleIverson(w http.ResponseWriter, r *http.Request) {
-	body := r.FormValue("w")
-	if len(body) == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if len(body) > LENGTH_LIMIT {
-		w.WriteHeader(http.StatusBadRequest)
-		io.WriteString(w, fmt.Sprintf("characters limited to %v", LENGTH_LIMIT))
-		return
-	}
-
-	resp, err := audio("iverson", body)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("[app] err: ", err)
-		return
-	}
-
-	w.Header().Set("content-type", "audio/mpeg")
-
-	log.Println("[app:iverson] phrase: ", body)
-
-	if _, err := w.Write(resp); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("[app] err: ", err)
-		return
+		if _, err := w.Write(resp); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Println("[app] err: ", err)
+			return
+		}
 	}
 }
 
@@ -87,10 +59,10 @@ func handlePing(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/s", handleSing)
-	http.HandleFunc("🎶", handleSing)
-	http.HandleFunc("/raining", handleSing)
-	http.HandleFunc("/ai", handleIverson)
+	http.HandleFunc("/s", makeHandler("raining"))
+	http.HandleFunc("/raining", makeHandler("raining"))
+	http.HandleFunc("/ai", makeHandler("iverson"))
+	http.HandleFunc("/meek", makeHandler("meek"))
 	http.HandleFunc("/varz/ping", handlePing)
 	http.ListenAndServe(":8080", nil)
 }

@@ -1,4 +1,4 @@
-FROM narf/its-raining-various-things@sha256:9457186502a19907af844d5e134f78ab02c64cc6e425a57e200121a7782ed2ce
+FROM narf/its-raining-various-things@sha256:d9bfcac2b49432276a402d7167a4d4bfe35c538f9551d980fbefded690c64d92
 
 COPY app /app
 
