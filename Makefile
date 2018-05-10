@@ -15,6 +15,10 @@ run: image
 	docker run --rm -ti -p $(PORT):$(PORT) $(IMAGE)
 
 .PHONY:
+shell: image
+	docker run --rm -ti -p $(PORT):$(PORT) $(IMAGE) --entrypoint="/bin/bash"
+
+.PHONY:
 clean:
 	@rm -rf app
 

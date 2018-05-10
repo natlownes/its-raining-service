@@ -55,7 +55,6 @@ func audio(theme string, phrase string) ([]byte, error) {
 
 func handlePing(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "pong")
-	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
