@@ -35,11 +35,43 @@ metadata:
   labels:
     app: its-raining-service
 spec:
-  type: NodePort
   ports:
-  - port: 80
-    targetPort: 8080
+  - port: 8080
     protocol: TCP
     name: http
   selector:
     app: its-raining-service
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: its-raining-service-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: its-raining-service
+spec:
+  hosts:
+  - "raining.looting.biz"
+  gateways:
+  - its-raining-service-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: its-raining-service
+        port:
+          number: 8080
