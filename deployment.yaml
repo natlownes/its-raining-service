@@ -17,7 +17,7 @@ spec:
       containers:
       - name: its-raining-service
         # Run this image
-        image: 10.30.2.110:32000/narf/its-raining-service@sha256:9e4ff4b8a11121523d6e53d6ed718c474880805699456ab56a3d766d26cb9903
+        image: 10.30.2.110:32000/narf/its-raining-service@sha256:84164c9b713f8fdd4557384da66f2e6c6596ebeead81de6f365b0e7f4af9f947
         ports:
         - containerPort: 8080
         resources:
