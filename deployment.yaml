@@ -127,11 +127,11 @@ spec:
         type: Value
         value: 20
 ---
-apiVersion: cert-manager.io/v1alpha3
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: raining-looting-biz-cert
-  namespace: default
+  namespace: istio-system
 spec:
   # Secret names are always required.
   secretName: raining-looting-biz-tls
